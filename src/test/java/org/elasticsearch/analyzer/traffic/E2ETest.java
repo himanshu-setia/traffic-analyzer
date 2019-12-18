@@ -1,10 +1,14 @@
 package org.elasticsearch.analyzer.traffic;
 
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
+import org.elasticsearch.analyzer.traffic.searchlog.SlowlogEntry;
+import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.elasticsearch.test.ESSingleNodeTestCase;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,34 +20,6 @@ import static org.elasticsearch.test.ESIntegTestCase.Scope.TEST;
 
 @ESIntegTestCase.ClusterScope(scope=TEST, numDataNodes=1)
 public class E2ETest extends ESIntegTestCase {
-
-    public final static Settings pluginIndexSettings = Settings.builder()
-            .put("index.number_of_shards", 1)
-            .put("index.number_of_replicas", 0)
-            .build();
-
-    public final static String indexType = "logs";
-    public final static String pluginIndexMappings = "{\n" +
-            "  \"logs\": {\n" +
-            "    \"properties\": {\n" +
-            "      \"type\": {\n" +
-            "        \"type\": \"keyword\"\n" +
-            "      },\n" +
-            "      \"index\": {\n" +
-            "        \"type\": \"keyword\"\n" +
-            "      },\n" +
-            "      \"description\": {\n" +
-            "        \"type\": \"text\"\n" +
-            "      },\n" +
-            "      \"timestamp\": {\n" +
-            "        \"type\": \"date\"\n" +
-            // "        \"format\": \"yyyy-MM-dd'T'HH:mm:ss.SSSZ\"\n" +
-            "      }\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
-
-
 
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
@@ -61,24 +37,32 @@ public class E2ETest extends ESIntegTestCase {
         assertEquals(false, exists);
 
         //#2 create index
-        boolean created = client.createIndex(index, indexType, pluginIndexSettings, pluginIndexMappings);
+        boolean created = client.createIndex(index, SlowlogIndex.indexType, SlowlogIndex.pluginIndexSettings,
+                SlowlogIndex.pluginIndexMappings);
+
         assertEquals(true, created);
 
         //3. check if index is created.
         exists = client.indexExists(index);
         assertEquals(true, exists);
 
-        String sample = "{\n" +
-                "  \"timestamp\": \"2019-12-18T12:05:01.256Z\",\n" +
-                "  \"type\": \"test\",\n" +
-                "  \"index\": \"index1\",\n" +
-                "  \"description\": \"This is a test\"\n" +
-                "}";
+        SlowlogEntry entry = new SlowlogEntry()
+                .setIndexname(index)
+                .setNodename("my-node")
+                .setPhase("fethc")
+                .setSource("GET { match_all {}}")
+                .setTimestamp(DateTime.now(DateTimeZone.UTC))
+                .setShard(2)
+                .setTotalshards(4)
+                .setTotalhits(100)
+                .setTookmillis(100);
+
+        System.out.println("SRIRAM            ******: "+entry.toJson());
         //4. index a doc
-        client.writeToIndex(index,indexType,sample);
+        client.writeToIndex(index,SlowlogIndex.indexType,entry.toJson());
 
         //5. search to trigger the hook.
-        client.Search(index,indexType,"type","test");
+        client.Search(index,SlowlogIndex.indexType,"indexname","test");
 
         //fixme: though the test exexcutes correctly,  I see exception during cluster shutdown. To be fixed latter as its not critical.
     }
