@@ -37,6 +37,7 @@ public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
     @Override
     public void onIndexModule(IndexModule indexModule) {
         log.info("Registering search listener.");
+        System.out.println("TESTING TESTING !!!!!!!!!!!!!!!!!");
 
         TestListener performanceanalyzerSearchListener = new TestListener();
         indexModule.addSearchOperationListener(performanceanalyzerSearchListener);
