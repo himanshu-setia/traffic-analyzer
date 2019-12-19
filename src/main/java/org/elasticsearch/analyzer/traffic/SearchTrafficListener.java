@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
-import org.elasticsearch.analyzer.traffic.slowlogs.InjestLogIndex;
+import org.elasticsearch.analyzer.traffic.slowlogs.IngestLogIndex;
 import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogEntry;
 import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogIndex;
 import org.elasticsearch.client.Client;
@@ -38,7 +38,7 @@ public class SearchTrafficListener implements SearchOperationListener {
 
     private boolean isSlowLogIndex(SearchContext context){
         return (context.shardTarget().getShardId().getIndexName().compareTo(SearchLogIndex.index) == 0)
-                || (context.shardTarget().getShardId().getIndexName().compareTo(InjestLogIndex.index) == 0);    }
+                || (context.shardTarget().getShardId().getIndexName().compareTo(IngestLogIndex.index) == 0);    }
 
     @Override
     public void onQueryPhase(SearchContext context, long tookInNanos) {

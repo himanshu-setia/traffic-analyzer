@@ -5,15 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
 import org.elasticsearch.analyzer.traffic.slowlogs.IngestLogEntry;
-import org.elasticsearch.analyzer.traffic.slowlogs.InjestLogIndex;
+import org.elasticsearch.analyzer.traffic.slowlogs.IngestLogIndex;
 import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogIndex;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.index.engine.Engine;
 import org.elasticsearch.index.shard.IndexingOperationListener;
-import org.elasticsearch.index.shard.SearchOperationListener;
 import org.elasticsearch.index.shard.ShardId;
-import org.elasticsearch.search.internal.SearchContext;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -41,7 +39,7 @@ public class IngestTrafficListener implements IndexingOperationListener {
 
     private boolean isSlowLogIndex(String index){
         return (index.compareTo(SearchLogIndex.index) == 0)
-                || (index.compareTo(InjestLogIndex.index) == 0);
+                || (index.compareTo(IngestLogIndex.index) == 0);
     }
 
 
@@ -50,7 +48,7 @@ public class IngestTrafficListener implements IndexingOperationListener {
       if(!isSlowLogIndex(shardId.getIndexName())) {
             IngestLogEntry entry = IngestSlowLogMessage.prepareEntry(shardId, result);
             log.info("Entry Ingest: " + entry.toJson());
-            client.writeToIndex(SearchLogIndex.index, SearchLogIndex.indexType, entry.toJson());
+            client.writeToIndex(IngestLogIndex.index, IngestLogIndex.indexType, entry.toJson());
         }
     }
 

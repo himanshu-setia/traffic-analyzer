@@ -2,7 +2,7 @@ package org.elasticsearch.analyzer.traffic.slowlogs;
 
 import org.elasticsearch.common.settings.Settings;
 
-public class InjestLogIndex {
+public class IngestLogIndex {
     public final static String index = "slowlog-ingest-index";
     public final static Settings pluginIndexSettings = Settings.builder()
             .put("index.number_of_shards", 1)
