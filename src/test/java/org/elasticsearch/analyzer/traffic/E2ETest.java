@@ -46,11 +46,14 @@ public class E2ETest extends ESIntegTestCase {
         exists = client.indexExists(index);
         assertEquals(true, exists);
 
+        String query = "GET { match_all {}}";
+
         SlowlogEntry entry = new SlowlogEntry()
                 .setIndexname(index)
                 .setNodename("my-node")
-                .setPhase("fethc")
-                .setSource("GET { match_all {}}")
+                .setPhase("fetch")
+                .setSource(query)
+                .setHashcode(SlowlogEntry.generateHashcode(query))
                 .setTimestamp(DateTime.now(DateTimeZone.UTC))
                 .setShard(2)
                 .setTotalshards(4)
@@ -58,8 +61,6 @@ public class E2ETest extends ESIntegTestCase {
                 .setTookmillis(100)
                 .setSearchType("QUERY_FETCH");
 
-
-        System.out.println("SRIRAM            ******: "+entry.toJson());
         //4. index a doc
         client.writeToIndex(index,SlowlogIndex.indexType,entry.toJson());
 

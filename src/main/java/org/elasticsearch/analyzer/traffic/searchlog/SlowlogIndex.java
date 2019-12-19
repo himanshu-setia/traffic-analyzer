@@ -40,6 +40,9 @@ public class SlowlogIndex {
             "    },\n" +
             "    \"source\": {\n" +
             "      \"type\": \"text\"\n" +
+            "    },\n" +
+            "    \"hashcode\": {\n" +
+            "      \"type\": \"keyword\"\n" +
             "    }\n" +
             "  }\n" +
             "}\n" +

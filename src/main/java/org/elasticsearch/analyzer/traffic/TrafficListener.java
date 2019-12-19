@@ -1,6 +1,5 @@
 package org.elasticsearch.analyzer.traffic;
 
-import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
@@ -8,20 +7,15 @@ import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
 import org.elasticsearch.analyzer.traffic.searchlog.SlowlogEntry;
 import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.index.shard.SearchOperationListener;
 import org.elasticsearch.search.internal.SearchContext;
-import org.elasticsearch.tasks.Task;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 
 /**
@@ -83,9 +77,10 @@ public class TrafficListener implements SearchOperationListener {
             }
             if (context.request().source() != null) {
                 String source = escapeJson(context.request().source().toString(FORMAT_PARAMS));
-                entry.setSource(source);
+                entry.setSource(source)
+                        .setHashcode(SlowlogEntry.generateHashcode(source));
             } else {
-                entry.setSource("{}");
+                entry.setSource("{}").setHashcode(null);
             }
             return entry;
         }

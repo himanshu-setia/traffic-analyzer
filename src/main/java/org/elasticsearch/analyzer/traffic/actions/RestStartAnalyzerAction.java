@@ -3,9 +3,8 @@ package org.elasticsearch.analyzer.traffic.actions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.support.ActiveShardCount;
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
+import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -14,8 +13,7 @@ import org.elasticsearch.rest.BytesRestResponse;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.rest.action.RestToXContentListener;
-import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
+
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
 /**

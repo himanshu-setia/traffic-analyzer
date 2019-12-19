@@ -5,7 +5,10 @@ import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.joda.time.DateTime;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * This object is stored as an entry in the slow-log-index.
@@ -21,6 +24,7 @@ public class SlowlogEntry {
     private long totalhits;
     private int totalshards;
     private String source;
+    private String hashcode;
     private String searchtype;
 
     public String toJson() {
@@ -37,6 +41,7 @@ public class SlowlogEntry {
                             .field("totalhits", totalhits)
                             .field("totalshards", totalshards)
                             .field("source", source)
+                            .field("hashcode", hashcode)
                             .field("searchtype", searchtype)
                             .endObject()
             );
@@ -126,8 +131,25 @@ public class SlowlogEntry {
         return this;
     }
 
+    public SlowlogEntry setHashcode(String hash) {
+        this.hashcode = hash;
+        return this;
+    }
+
     public SlowlogEntry setSearchType(String searchType) {
         this.searchtype = searchtype;
         return this;
+    }
+
+    private static MessageDigest messageDigest = null;
+    static {
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException ex){
+            //ignore.
+        }
+    }
+    public static String generateHashcode(String string){
+        return DatatypeConverter.printHexBinary(messageDigest.digest(string.getBytes()));
     }
 }
