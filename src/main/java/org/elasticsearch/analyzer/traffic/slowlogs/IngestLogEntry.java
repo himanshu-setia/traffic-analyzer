@@ -47,17 +47,9 @@ public class IngestLogEntry {
         return this;
     }
 
-    public String getNodename() {
-        return nodename;
-    }
-
     public IngestLogEntry setNodename(String nodename) {
         this.nodename = nodename;
         return this;
-    }
-
-    public String getIndexname() {
-        return indexname;
     }
 
     public IngestLogEntry setIndexname(String indexname) {
@@ -65,17 +57,9 @@ public class IngestLogEntry {
         return this;
     }
 
-    public int getShard() {
-        return shard;
-    }
-
     public IngestLogEntry setShard(int shard) {
         this.shard = shard;
         return this;
-    }
-
-    public long getTookmillis() {
-        return tookmillis;
     }
 
     public IngestLogEntry setTookmillis(long tookmillis) {
@@ -83,15 +67,6 @@ public class IngestLogEntry {
         return this;
     }
 
-    private static MessageDigest messageDigest = null;
-    static {
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException ex){
-            //ignore.
-        }
-    }
-    public static String generateHashcode(String string){
-        return DatatypeConverter.printHexBinary(messageDigest.digest(string.getBytes()));
-    }
+
+
 }
