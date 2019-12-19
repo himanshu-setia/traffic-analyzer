@@ -39,7 +39,7 @@ public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
         log.info("Registering search listener.");
         System.out.println("TESTING TESTING !!!!!!!!!!!!!!!!!");
 
-        TestListener performanceanalyzerSearchListener = new TestListener();
+        TrafficListener performanceanalyzerSearchListener = new TrafficListener();
         indexModule.addSearchOperationListener(performanceanalyzerSearchListener);
     }
 }

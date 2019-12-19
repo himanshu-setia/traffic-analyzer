@@ -55,7 +55,9 @@ public class E2ETest extends ESIntegTestCase {
                 .setShard(2)
                 .setTotalshards(4)
                 .setTotalhits(100)
-                .setTookmillis(100);
+                .setTookmillis(100)
+                .setSearchType("QUERY_FETCH");
+
 
         System.out.println("SRIRAM            ******: "+entry.toJson());
         //4. index a doc

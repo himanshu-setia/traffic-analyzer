@@ -21,22 +21,28 @@ public class SlowlogEntry {
     private long totalhits;
     private int totalshards;
     private String source;
+    private String searchtype;
 
-    public String toJson() throws IOException {
-        return Strings.toString(
-            XContentFactory.jsonBuilder()
-                    .startObject()
-                    .field("timestamp", timestamp.toString())
-                    .field("phase", phase)
-                    .field("nodename", nodename)
-                    .field("indexname", indexname)
-                    .field("shard", shard)
-                    .field("tookmillis", tookmillis)
-                    .field("totalhits", totalhits)
-                    .field("totalshards", totalshards)
-                    .field("source", source)
-                    .endObject()
-        );
+    public String toJson() {
+        try {
+            return Strings.toString(
+                    XContentFactory.jsonBuilder()
+                            .startObject()
+                            .field("timestamp", timestamp.toString())
+                            .field("phase", phase)
+                            .field("nodename", nodename)
+                            .field("indexname", indexname)
+                            .field("shard", shard)
+                            .field("tookmillis", tookmillis)
+                            .field("totalhits", totalhits)
+                            .field("totalshards", totalshards)
+                            .field("source", source)
+                            .field("searchtype", searchtype)
+                            .endObject()
+            );
+        }catch (IOException ex){
+            return null;
+        }
     }
 
     public DateTime getTimestamp() {
@@ -117,6 +123,11 @@ public class SlowlogEntry {
 
     public SlowlogEntry setSource(String source) {
         this.source = source;
+        return this;
+    }
+
+    public SlowlogEntry setSearchType(String searchType) {
+        this.searchtype = searchtype;
         return this;
     }
 }
