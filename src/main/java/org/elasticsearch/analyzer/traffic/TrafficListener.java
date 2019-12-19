@@ -41,20 +41,28 @@ public class TrafficListener implements SearchOperationListener {
         this.client = new ElasticClient(client);
     }
 
+    private boolean isSlowLogIndex(SearchContext context){
+        return context.shardTarget().getShardId().getIndexName().compareTo(SlowlogIndex.index) == 0;
+    }
+
     @Override
     public void onQueryPhase(SearchContext context, long tookInNanos) {
-        SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context,tookInNanos)
-                .setPhase("query");
-        log.info("Entry QueryPhase: "+ entry.toJson() );
-        client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
+        if(!isSlowLogIndex(context)) {
+            SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context, tookInNanos)
+                    .setPhase("query");
+            log.info("Entry QueryPhase: " + entry.toJson());
+            client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
+        }
     }
 
     @Override
     public void onFetchPhase(SearchContext context, long tookInNanos) {
-        SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context,tookInNanos)
-                .setPhase("fetch");
-        log.info("Entry QueryPhase: "+ entry.toJson() );
-        client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
+        if(!isSlowLogIndex(context)) {
+            SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context, tookInNanos)
+                    .setPhase("fetch");
+            log.info("Entry QueryPhase: " + entry.toJson());
+            client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
+        }
     }
 
     static final class SearchSlowLogMessage  {
