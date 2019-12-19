@@ -4,8 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
-import org.elasticsearch.analyzer.traffic.searchlog.SlowlogEntry;
-import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
+import org.elasticsearch.analyzer.traffic.slowlogs.InjestLogIndex;
+import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogEntry;
+import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogIndex;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.index.shard.SearchOperationListener;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * Refer: https://github.com/elastic/elasticsearch/blob/cf13259c979ebe3beefd5c5a2eb3005cfe4fc298/server/src/main/java/org/elasticsearch/index/SearchSlowLog.java
  * server/src/main/java/org/elasticsearch/index/SearchSlowLog.java
  */
-public class TrafficListener implements SearchOperationListener {
+public class SearchTrafficListener implements SearchOperationListener {
 
     private final Logger log = LogManager.getLogger(RestStartAnalyzerAction.class);
 
@@ -31,37 +32,37 @@ public class TrafficListener implements SearchOperationListener {
 
     private ElasticClient client;
 
-    public TrafficListener(Client client) {
+    public SearchTrafficListener(Client client) {
         this.client = new ElasticClient(client);
     }
 
     private boolean isSlowLogIndex(SearchContext context){
-        return context.shardTarget().getShardId().getIndexName().compareTo(SlowlogIndex.index) == 0;
-    }
+        return (context.shardTarget().getShardId().getIndexName().compareTo(SearchLogIndex.index) == 0)
+                || (context.shardTarget().getShardId().getIndexName().compareTo(InjestLogIndex.index) == 0);    }
 
     @Override
     public void onQueryPhase(SearchContext context, long tookInNanos) {
         if(!isSlowLogIndex(context)) {
-            SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context, tookInNanos)
+            SearchLogEntry entry = SearchSlowLogMessage.prepareEntry(context, tookInNanos)
                     .setPhase("query");
             log.info("Entry QueryPhase: " + entry.toJson());
-            client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
+            client.writeToIndex(SearchLogIndex.index, SearchLogIndex.indexType, entry.toJson());
         }
     }
 
     @Override
     public void onFetchPhase(SearchContext context, long tookInNanos) {
         if(!isSlowLogIndex(context)) {
-            SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context, tookInNanos)
+            SearchLogEntry entry = SearchSlowLogMessage.prepareEntry(context, tookInNanos)
                     .setPhase("fetch");
             log.info("Entry QueryPhase: " + entry.toJson());
-            client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
+            client.writeToIndex(SearchLogIndex.index, SearchLogIndex.indexType, entry.toJson());
         }
     }
 
     static final class SearchSlowLogMessage  {
-        private static SlowlogEntry prepareEntry(SearchContext context, long tookInNanos) {
-            SlowlogEntry entry = new SlowlogEntry()
+        private static SearchLogEntry prepareEntry(SearchContext context, long tookInNanos) {
+            SearchLogEntry entry = new SearchLogEntry()
                     .setIndexname(context.shardTarget().getShardId().getIndexName())
                     .setNodename(context.indexShard().nodeName())
                     .setShard(context.shardTarget().getShardId().getId())
@@ -78,7 +79,7 @@ public class TrafficListener implements SearchOperationListener {
             if (context.request().source() != null) {
                 String source = escapeJson(context.request().source().toString(FORMAT_PARAMS));
                 entry.setSource(source)
-                        .setHashcode(SlowlogEntry.generateHashcode(source));
+                        .setHashcode(SearchLogEntry.generateHashcode(source));
             } else {
                 entry.setSource("{}").setHashcode(null);
             }

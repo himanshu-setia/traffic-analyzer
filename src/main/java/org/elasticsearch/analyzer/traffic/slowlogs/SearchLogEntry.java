@@ -1,4 +1,4 @@
-package org.elasticsearch.analyzer.traffic.searchlog;
+package org.elasticsearch.analyzer.traffic.slowlogs;
 
 
 import org.elasticsearch.common.Strings;
@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * This object is stored as an entry in the slow-log-index.
  */
-public class SlowlogEntry {
+public class SearchLogEntry {
 
     private DateTime timestamp = null;
     private String phase ;
@@ -54,7 +54,7 @@ public class SlowlogEntry {
         return timestamp;
     }
 
-    public SlowlogEntry setTimestamp(DateTime timestamp) {
+    public SearchLogEntry setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
         return this;
     }
@@ -63,7 +63,7 @@ public class SlowlogEntry {
         return phase;
     }
 
-    public SlowlogEntry setPhase(String phase) {
+    public SearchLogEntry setPhase(String phase) {
         this.phase = phase;
         return this;
     }
@@ -72,7 +72,7 @@ public class SlowlogEntry {
         return nodename;
     }
 
-    public SlowlogEntry setNodename(String nodename) {
+    public SearchLogEntry setNodename(String nodename) {
         this.nodename = nodename;
         return this;
     }
@@ -81,7 +81,7 @@ public class SlowlogEntry {
         return indexname;
     }
 
-    public SlowlogEntry setIndexname(String indexname) {
+    public SearchLogEntry setIndexname(String indexname) {
         this.indexname = indexname;
         return this;
     }
@@ -90,7 +90,7 @@ public class SlowlogEntry {
         return shard;
     }
 
-    public SlowlogEntry setShard(int shard) {
+    public SearchLogEntry setShard(int shard) {
         this.shard = shard;
         return this;
     }
@@ -99,7 +99,7 @@ public class SlowlogEntry {
         return tookmillis;
     }
 
-    public SlowlogEntry setTookmillis(long tookmillis) {
+    public SearchLogEntry setTookmillis(long tookmillis) {
         this.tookmillis = tookmillis;
         return this;
     }
@@ -108,7 +108,7 @@ public class SlowlogEntry {
         return totalhits;
     }
 
-    public SlowlogEntry setTotalhits(long totalhits) {
+    public SearchLogEntry setTotalhits(long totalhits) {
         this.totalhits = totalhits;
         return this;
     }
@@ -117,7 +117,7 @@ public class SlowlogEntry {
         return totalshards;
     }
 
-    public SlowlogEntry setTotalshards(int totalshards) {
+    public SearchLogEntry setTotalshards(int totalshards) {
         this.totalshards = totalshards;
         return this;
     }
@@ -126,17 +126,17 @@ public class SlowlogEntry {
         return source;
     }
 
-    public SlowlogEntry setSource(String source) {
+    public SearchLogEntry setSource(String source) {
         this.source = source;
         return this;
     }
 
-    public SlowlogEntry setHashcode(String hash) {
+    public SearchLogEntry setHashcode(String hash) {
         this.hashcode = hash;
         return this;
     }
 
-    public SlowlogEntry setSearchType(String searchType) {
+    public SearchLogEntry setSearchType(String searchType) {
         this.searchtype = searchtype;
         return this;
     }

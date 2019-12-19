@@ -1,8 +1,8 @@
-package org.elasticsearch.analyzer.traffic.searchlog;
+package org.elasticsearch.analyzer.traffic.slowlogs;
 
 import org.elasticsearch.common.settings.Settings;
 
-public class SlowlogIndex {
+public class SearchLogIndex {
     public final static String index = "slowlog-index";
     public final static Settings pluginIndexSettings = Settings.builder()
             .put("index.number_of_shards", 1)

@@ -1,12 +1,10 @@
 package org.elasticsearch.analyzer.traffic;
 
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
-import org.elasticsearch.analyzer.traffic.searchlog.SlowlogEntry;
-import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
-import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogEntry;
+import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogIndex;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.test.ESIntegTestCase;
-import org.elasticsearch.test.ESSingleNodeTestCase;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -37,8 +35,8 @@ public class E2ETest extends ESIntegTestCase {
         assertEquals(false, exists);
 
         //#2 create index
-        boolean created = client.createIndex(index, SlowlogIndex.indexType, SlowlogIndex.pluginIndexSettings,
-                SlowlogIndex.pluginIndexMappings);
+        boolean created = client.createIndex(index, SearchLogIndex.indexType, SearchLogIndex.pluginIndexSettings,
+                SearchLogIndex.pluginIndexMappings);
 
         assertEquals(true, created);
 
@@ -48,12 +46,12 @@ public class E2ETest extends ESIntegTestCase {
 
         String query = "GET { match_all {}}";
 
-        SlowlogEntry entry = new SlowlogEntry()
+        SearchLogEntry entry = new SearchLogEntry()
                 .setIndexname(index)
                 .setNodename("my-node")
                 .setPhase("fetch")
                 .setSource(query)
-                .setHashcode(SlowlogEntry.generateHashcode(query))
+                .setHashcode(SearchLogEntry.generateHashcode(query))
                 .setTimestamp(DateTime.now(DateTimeZone.UTC))
                 .setShard(2)
                 .setTotalshards(4)
@@ -62,10 +60,10 @@ public class E2ETest extends ESIntegTestCase {
                 .setSearchType("QUERY_FETCH");
 
         //4. index a doc
-        client.writeToIndex(index,SlowlogIndex.indexType,entry.toJson());
+        client.writeToIndex(index, SearchLogIndex.indexType,entry.toJson());
 
         //5. search to trigger the hook.
-        client.Search(index,SlowlogIndex.indexType,"indexname","test");
+        client.Search(index, SearchLogIndex.indexType,"indexname","test");
 
         //fixme: though the test exexcutes correctly,  I see exception during cluster shutdown. To be fixed latter as its not critical.
     }

@@ -4,7 +4,7 @@ package org.elasticsearch.analyzer.traffic.actions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
-import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
+import org.elasticsearch.analyzer.traffic.slowlogs.SearchLogIndex;
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -42,7 +42,7 @@ public class RestStartAnalyzerAction extends BaseRestHandler {
         ElasticClient esclient = new ElasticClient(client);
 
         try {
-            esclient.createIndex(SlowlogIndex.index, SlowlogIndex.indexType, SlowlogIndex.pluginIndexSettings, SlowlogIndex.pluginIndexMappings);
+            esclient.createIndex(SearchLogIndex.index, SearchLogIndex.indexType, SearchLogIndex.pluginIndexSettings, SearchLogIndex.pluginIndexMappings);
         } catch (Exception e){
             log.error("Error during CreateIndex");
         }

@@ -34,12 +34,14 @@ public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
 
     private final Logger log = LogManager.getLogger(TrafficAnalyzerPlugin.class);
     private final String TRAFFIC_ANALYZER_INDEX = ".traffic_analyzer";
-    private TrafficListener trafficListener;
+    private SearchTrafficListener searchTrafficListener;
+    private IngestTrafficListener ingestTrafficListener;
 
     @Override
     public Collection<Object> createComponents(Client client, ClusterService clusterService, ThreadPool threadPool, ResourceWatcherService resourceWatcherService, ScriptService scriptService, NamedXContentRegistry xContentRegistry, Environment environment, NodeEnvironment nodeEnvironment, NamedWriteableRegistry namedWriteableRegistry) {
-        this.trafficListener = new TrafficListener(client);;
-        return Arrays.asList(this.trafficListener);
+        this.searchTrafficListener = new SearchTrafficListener(client);;
+        this.ingestTrafficListener = new IngestTrafficListener(client);;
+        return Arrays.asList(this.searchTrafficListener, this.ingestTrafficListener);
     }
 
     private boolean trafficAnalyzerIndexExists(ClusterService clusterService){
@@ -71,10 +73,10 @@ public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
            };
          }*/
 
-    //- shardquery, shardfetch
     @Override
     public void onIndexModule(IndexModule indexModule) {
         log.info("Registering search listener.");
-        indexModule.addSearchOperationListener(this.trafficListener);
+        indexModule.addSearchOperationListener(this.searchTrafficListener);
+        indexModule.addIndexOperationListener(this.ingestTrafficListener);
     }
 }
