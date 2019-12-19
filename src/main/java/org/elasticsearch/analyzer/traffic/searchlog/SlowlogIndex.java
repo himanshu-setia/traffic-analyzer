@@ -24,7 +24,7 @@ public class SlowlogIndex {
             "      \"type\": \"keyword\"\n" +
             "    },\n" +
             "    \"indexname\": {\n" +
-            "      \"type\": \"text\"\n" +
+            "      \"type\": \"keyword\"\n" +
             "    },\n" +
             "    \"shard\": {\n" +
             "      \"type\": \"integer\"\n" +

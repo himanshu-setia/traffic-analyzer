@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
+import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
 import org.elasticsearch.analyzer.traffic.searchlog.SlowlogEntry;
+import org.elasticsearch.analyzer.traffic.searchlog.SlowlogIndex;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.index.shard.SearchOperationListener;
@@ -32,12 +35,18 @@ public class TrafficListener implements SearchOperationListener {
     private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final ToXContent.Params FORMAT_PARAMS = new ToXContent.MapParams(Collections.singletonMap("pretty", "false"));
 
+    private ElasticClient client;
+
+    public TrafficListener(Client client) {
+        this.client = new ElasticClient(client);
+    }
 
     @Override
     public void onQueryPhase(SearchContext context, long tookInNanos) {
         SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context,tookInNanos)
                 .setPhase("query");
         log.info("Entry QueryPhase: "+ entry.toJson() );
+        client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
     }
 
     @Override
@@ -45,7 +54,7 @@ public class TrafficListener implements SearchOperationListener {
         SlowlogEntry entry = SearchSlowLogMessage.prepareEntry(context,tookInNanos)
                 .setPhase("fetch");
         log.info("Entry QueryPhase: "+ entry.toJson() );
-
+        client.writeToIndex(SlowlogIndex.index, SlowlogIndex.indexType, entry.toJson());
     }
 
     static final class SearchSlowLogMessage  {
