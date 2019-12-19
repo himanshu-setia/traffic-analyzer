@@ -43,6 +43,12 @@ public class RestStartAnalyzerAction extends BaseRestHandler {
         ElasticClient esclient = new ElasticClient(client);
 
         try {
+            if(esclient.indexExists(SearchLogIndex.index)){
+                esclient.deleteIndex(SearchLogIndex.index);
+            }
+            if(esclient.indexExists(IngestLogIndex.index)){
+                esclient.deleteIndex(IngestLogIndex.index);
+            }
             esclient.createIndex(SearchLogIndex.index, SearchLogIndex.indexType, SearchLogIndex.pluginIndexSettings, SearchLogIndex.pluginIndexMappings);
             esclient.createIndex(IngestLogIndex.index, IngestLogIndex.indexType, IngestLogIndex.pluginIndexSettings, IngestLogIndex.pluginIndexMappings);
         } catch (Exception e){
