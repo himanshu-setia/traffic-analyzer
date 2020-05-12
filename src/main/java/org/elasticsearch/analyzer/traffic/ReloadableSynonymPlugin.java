@@ -2,7 +2,11 @@ package org.elasticsearch.analyzer.traffic;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
+import org.elasticsearch.action.ActionRequest;
+import org.elasticsearch.action.ActionResponse;
+import org.elasticsearch.analyzer.traffic.actions.RefreshSynonymAnalyzerAction;
+import org.elasticsearch.analyzer.traffic.actions.RestRefreshSynonymAnalyzerAction;
+import org.elasticsearch.analyzer.traffic.actions.TransportRefreshSynonymAnalyzerAction;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
@@ -30,18 +34,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
+public class ReloadableSynonymPlugin extends Plugin implements ActionPlugin {
 
-    private final Logger log = LogManager.getLogger(TrafficAnalyzerPlugin.class);
-    private final String TRAFFIC_ANALYZER_INDEX = ".traffic_analyzer";
-    private SearchTrafficListener searchTrafficListener;
-    private IngestTrafficListener ingestTrafficListener;
+    private final Logger log = LogManager.getLogger(ReloadableSynonymPlugin.class);
+//    private SearchTrafficListener searchTrafficListener;
+//    private IngestTrafficListener ingestTrafficListener;
 
     @Override
     public Collection<Object> createComponents(Client client, ClusterService clusterService, ThreadPool threadPool, ResourceWatcherService resourceWatcherService, ScriptService scriptService, NamedXContentRegistry xContentRegistry, Environment environment, NodeEnvironment nodeEnvironment, NamedWriteableRegistry namedWriteableRegistry) {
-        this.searchTrafficListener = new SearchTrafficListener(client);;
-        this.ingestTrafficListener = new IngestTrafficListener(client);;
-        return Arrays.asList(this.searchTrafficListener, this.ingestTrafficListener);
+//        this.searchTrafficListener = new SearchTrafficListener(client);
+//        this.ingestTrafficListener = new IngestTrafficListener(client);
+
+        return Arrays.asList();
     }
 
     private boolean trafficAnalyzerIndexExists(ClusterService clusterService){
@@ -58,7 +62,7 @@ public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
                                              IndexNameExpressionResolver indexNameExpressionResolver,
                                              Supplier<DiscoveryNodes> nodesInCluster) {
         List<RestHandler> list = new ArrayList<>();
-        list.add(new RestStartAnalyzerAction(settings, restController));
+        list.add(new RestRefreshSynonymAnalyzerAction(settings, restController));
         return list;
     }
 
@@ -73,10 +77,21 @@ public class TrafficAnalyzerPlugin extends Plugin implements ActionPlugin {
            };
          }*/
 
+    /*
+     * Register action and handler so that transportClient can find proxy for action
+     */
     @Override
-    public void onIndexModule(IndexModule indexModule) {
-        log.info("Registering search listener.");
-        indexModule.addSearchOperationListener(this.searchTrafficListener);
-        indexModule.addIndexOperationListener(this.ingestTrafficListener);
+    public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
+        return Arrays
+                .asList(
+                        new ActionHandler<>(RefreshSynonymAnalyzerAction.INSTANCE, TransportRefreshSynonymAnalyzerAction.class)
+                );
     }
+
+//    @Override
+//    public void onIndexModule(IndexModule indexModule) {
+//        log.info("Registering search listener.");
+//        indexModule.addSearchOperationListener(this.searchTrafficListener);
+//        indexModule.addIndexOperationListener(this.ingestTrafficListener);
+//    }
 }

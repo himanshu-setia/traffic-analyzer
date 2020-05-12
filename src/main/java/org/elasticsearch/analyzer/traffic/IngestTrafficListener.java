@@ -2,7 +2,7 @@ package org.elasticsearch.analyzer.traffic;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.analyzer.traffic.actions.RestStartAnalyzerAction;
+import org.elasticsearch.analyzer.traffic.actions.RestRefreshSynonymAnalyzerAction;
 import org.elasticsearch.analyzer.traffic.elastic.ElasticClient;
 import org.elasticsearch.analyzer.traffic.slowlogs.IngestLogEntry;
 import org.elasticsearch.analyzer.traffic.slowlogs.IngestLogIndex;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class IngestTrafficListener implements IndexingOperationListener {
 
-    private final Logger log = LogManager.getLogger(RestStartAnalyzerAction.class);
+    private final Logger log = LogManager.getLogger(RestRefreshSynonymAnalyzerAction.class);
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final ToXContent.Params FORMAT_PARAMS = new ToXContent.MapParams(Collections.singletonMap("pretty", "false"));

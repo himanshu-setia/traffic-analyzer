@@ -21,7 +21,7 @@ public class E2ETest extends ESIntegTestCase {
 
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
-        return  Arrays.asList(TrafficAnalyzerPlugin.class);
+        return  Arrays.asList(ReloadableSynonymPlugin.class);
     }
 
     @Test
